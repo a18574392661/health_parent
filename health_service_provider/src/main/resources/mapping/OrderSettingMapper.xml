@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?> <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+
+<mapper namespace="com.itheima.mapper.OrdersettingMapper"> <!--新增 -->
+
+	<insert id="inserts" useGeneratedKeys="true" parameterType="java.util.List">
+		insert into t_ordersetting values
+	<foreach collection="list" item="item" index="index" separator=",">
+	 (null,#{item.orderDate},#{item.number},DEFAULT)
+	
+	</foreach>
+		 </insert>
+		
+		<select id="selectOneDate" parameterType="com.itheima.pojo.OrderSetting" resultType="com.itheima.pojo.OrderSetting">
+		 select * from t_ordersetting where orderDate=#{orderDate}
+		</select>
+		
+		<update id="updateNumberDate" parameterType="com.itheima.pojo.OrderSetting">
+		update t_ordersetting 
+		<set>
+		 <if test="orderDate != null"> orderDate = #{orderDate},</if>
+		 
+		 <if test="number!=null">
+		    number=#{number},
+		 </if>
+		  <if test="reservations!=null">
+		    reservations=#{reservations},
+		 </if>
+		</set>
+		where id=#{id}
+		</update>
+		
+		<select id="getYearOrderSettin" parameterType="string" resultType="com.itheima.pojo.OrderSetting">
+		 	
+			select * from t_ordersetting where  year(orderDate)=#{year} AND MONTH(orderDate)=#{moth}
+		</select>
+		
+		
+		<update id="editNumberByDate" parameterType="java.util.Map">
+		 update t_ordersetting set number=#{number} where orderDate=#{orderDate}
+		</update>
+</mapper>

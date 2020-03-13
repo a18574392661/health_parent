@@ -1,0 +1,90 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>com.itheima</groupId>
+    <artifactId>health_parent</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+  </parent>
+  <artifactId>health_backend</artifactId>
+  
+    
+  <dependencies>
+  
+
+  
+    
+      
+  
+  
+	<dependency>
+	<groupId>com.itheima</groupId>
+	<artifactId>health_interface</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	</dependency>
+	
+	
+	<dependency>
+
+<groupId>net.sourceforge.nekohtml</groupId>
+
+<artifactId>nekohtml</artifactId>
+
+
+
+</dependency>
+
+
+    
+          <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-taglibs</artifactId>
+    	
+        </dependency>
+        
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-web</artifactId>
+			
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-config</artifactId>
+			
+		</dependency>
+		
+</dependencies>
+
+<build>
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
+		</plugins>
+		
+			<resources>
+	<resource>
+ 		<directory>src/main/resources</directory>
+        <includes>
+        	<include>application.properties</include>
+            <include>**/*.xml</include>
+            <include>templates/**</include>
+           
+            <include>static/**</include>
+            </includes>
+            	<excludes>
+	            	<exclude>env/**</exclude>
+                </excludes>
+                <filtering>false</filtering>
+       </resource>
+       <resource>
+      	<directory>
+      		src/main/resources/env/${profiles.active}
+      	</directory>
+	</resource>
+</resources>
+
+	</build>
+	
+</project>

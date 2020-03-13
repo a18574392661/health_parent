@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+	<title>批量反地址解析+商圈</title>
+	<style type="text/css">
+		body, html{width: 100%;height: 100%;margin:0;font-family:"微软雅黑";}
+		#l-map{height:300px;width:100%;}
+		#r-result{width:100%; font-size:14px;line-height:20px;}
+	</style>
+	<script type="text/javascript" src="//api.map.baidu.com/api?v=2.0&ak=gDPPqnfE6qSxIxgrVYueGR6pRRTUTUO2"></script>
+<script type="text/javascript" src="/js/jquery.min.js"></script>
+</head>
+<body>
+<div id="all">
+	<!-- 查询地址  -->
+	<table border="1" id="tab" width="700px">
+	     <tr>
+	      <td>序号</td>
+	       <td>地址名称</td>
+	        <td>精度</td>
+	         <td>纬度</td>
+	          <td>操作</td>
+	     </tr>
+	</table>
+	<button onclick="addrAdd()">新增地址</button>
+	</div>
+	
+	
+	<input type="hidden" name="wd" id="wd">
+		<input type="hidden" name="jd" id="jd">
+		
+	<script type="text/javascript">
+	  $(function(){
+		 $("#add").hide()
+		  $.get("/AddressAll",function(data){
+				for(i=0;i<data.data.length;i++){
+					var tr="<tr><td>"+i+1+"</td><td>"+data.data[i].name+"</td><td>"+data.data[i].jd+"</td><td>"+data.data[i].wd+"</td><td><a href='javascript:del("+data.data[i].id+")'>删除</a></td></tr>"
+					$("#tab").append(tr);
+				}
+				
+			
+			})
+		  
+	  })
+	  
+	  function del(id){
+		  $.get("/AddressDel",{"id":id+""},function(data){
+				
+			 	 location.reload();
+			})
+		  
+	  }
+	  
+	  function addrAdd(){
+		  $("#all").hide();
+		  $("#add").show()
+		  
+	  }
+	
+	</script>
+	
+	<div id="add">
+	
+	<div id="l-map"></div>
+	<div id="r-result">请输入地址名称:<input type="text" id="name" size="20" style="width:150px;" /></div>
+	<div id="searchResultPanel" style="border:1px solid #C0C0C0;width:150px;height:auto; display:none;"></div>
+	<input type="button" onclick="tj()" value="新增地址">
+<script type="text/javascript">
+	// 百度地图API功能
+	function G(id) {
+		return document.getElementById(id);
+	}
+
+	var map = new BMap.Map("l-map");
+	map.centerAndZoom("醴陵",12);       // 最开始显示的地方  初始化地图,设置城市和地图级别。
+
+	var ac = new BMap.Autocomplete(    //建立一个自动完成的对象
+		{"input" : "name"
+		,"location" : map
+	});
+
+	ac.addEventListener("onhighlight", function(e) {  //鼠标放在下拉列表上的事件
+	var str = "";
+		var _value = e.fromitem.value;
+		var value = "";
+		if (e.fromitem.index > -1) {
+			value = _value.province +  _value.city +  _value.district +  _value.street +  _value.business;
+		}    
+		str = "FromItem<br />index = " + e.fromitem.index + "<br />value = " + value;
+		
+		value = "";
+		if (e.toitem.index > -1) {
+			_value = e.toitem.value;
+			value = _value.province +  _value.city +  _value.district +  _value.street +  _value.business;
+		}    
+		str += "<br />ToItem<br />index = " + e.toitem.index + "<br />value = " + value;
+		G("searchResultPanel").innerHTML = str;
+	});
+
+	var myValue;
+	ac.addEventListener("onconfirm", function(e) {    //鼠标点击下拉列表后的事件
+	var _value = e.item.value;
+		myValue = _value.province +  _value.city +  _value.district +  _value.street +  _value.business;
+		G("searchResultPanel").innerHTML ="onconfirm<br />index = " + e.item.index + "<br />myValue = " + myValue;
+		
+		setPlace();
+	});
+
+	function setPlace(){
+		map.clearOverlays();    //清除地图上所有覆盖物
+		function myFun(){
+			var pp = local.getResults().getPoi(0).point;    //获取第一个智能搜索的结果
+			map.centerAndZoom(pp, 18);
+			$("#jd").val(pp.lng);
+			$("#wd").val(pp.lat);
+			//alert(pp.lng+"//"+pp.lat)
+			map.addOverlay(new BMap.Marker(pp));    //添加标注
+		}
+		var local = new BMap.LocalSearch(map, { //智能搜索
+		  onSearchComplete: myFun
+		});
+		local.search(myValue);
+	}
+	
+	function tj(){
+		var jd=$("#jd").val();
+		var wd=$("#wd").val();
+		var name=$("#name").val();
+		if(name===""||jd===""||wd===""){
+			alert("请输入完整信息")
+			return;
+		}
+		var datas={
+	            name:name,
+	            jd:jd,
+	           	wd:wd
+	                 
+	        };
+		
+		$.post("/AddressAdd",JSON.stringify(datas),function(data){
+			alert(data.data.message)
+			 if(data.data.flag){
+				 //刷新隐藏
+				  $("#all").show();
+				  $("#add").hide();
+				  location.reload();
+			 }
+			
+			
+		})
+	}
+</script>
+	
+	
+	</div>
+</body>
+</html>

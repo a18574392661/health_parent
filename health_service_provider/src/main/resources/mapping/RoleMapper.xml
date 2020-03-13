@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" ?> <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.itheima.mapper.RoleMapper"> 
+
+
+<select id="queryUserRoles" parameterType="integer" resultType="com.itheima.pojo.Role">
+	
+select role.* from t_user_role u_r 
+INNER JOIN t_role role 
+on u_r.role_id=role.id
+where u_r.user_id=#{uid}
+</select>
+
+
+<select id="roleAll" parameterType="com.itheima.pojo.Role" resultType="com.itheima.pojo.Role">
+	
+ select * from t_role
+ <where>
+  <if test="name !=null and name.length>0">
+  	and name=#{name}
+    
+  </if>
+ </where>
+</select>
+
+<select id="queryRolePer" parameterType="string" resultType="int">
+ select count(1) from t_role_permission where role_id=#{rid}
+</select>
+
+<select id="queryRoleMenu" parameterType="string" resultType="int">
+ select count(1) from t_role_menu where role_id=#{rid}
+</select>
+
+<delete id="delRoleUser" parameterType="string">
+ delete from t_user_role  where role_id=#{rid}
+</delete>
+
+<delete id="delRole" parameterType="string">
+delete from t_role where id=#{rid}
+</delete>
+
+<!-- 查询角色的权限 -->
+<select id="queryRolePers" resultType="com.itheima.pojo.Permission" parameterType="string">
+<if test="id !=null and id !='' ">
+ select per.*,IFNULL(r_p.role_id,0) as status from t_permission per left join t_role_permission r_p 
+on per.id=r_p.permission_id   and r_p.role_id=#{id}
+
+</if>
+ 
+ <if test="id ==null">
+ select per.*,IFNULL(per.id,0) as status from t_permission per 
+</if>
+
+</select>
+
+<insert id="roleAdd" parameterType="com.itheima.pojo.Role" keyColumn="id" keyProperty="id" useGeneratedKeys="true">
+ insert into t_role values(null,#{name},#{keyword},#{description})
+</insert>
+<insert id="insertRoleAndPer" parameterType="java.util.Map">
+ insert into t_role_permission values(#{rid},#{perid})
+</insert>
+<insert id="insertRoleAndMenu" parameterType="java.util.Map">
+  insert into t_role_menu values(#{rid},#{mid})
+
+</insert>
+
+<delete id="delRolePer" parameterType="string">
+delete from t_role_permission where role_id=#{rid}
+</delete>
+
+
+<delete id="delRoleMenu" parameterType="string">
+delete from t_role_menu where role_id=#{rid}
+</delete>
+
+<update id="roleEdit" parameterType="com.itheima.pojo.Role">
+ update t_role set name=#{name}, keyword=#{keyword},description=#{description} where id=#{id}
+ 
+</update>
+
+<select id="roleByid" parameterType="string" resultType="com.itheima.pojo.Role">
+ select * from t_role where id=#{id}
+</select>
+
+<select id="roleTree" parameterType="string" resultType="string">
+ select menu_id from t_role_menu where role_id=#{id}
+</select>
+</mapper>

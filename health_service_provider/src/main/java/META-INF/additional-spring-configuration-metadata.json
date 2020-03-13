@@ -1,0 +1,32 @@
+{"properties": [
+  {
+    "name": "spring.dubbo.protocol.name",
+    "type": "java.lang.String",
+    "description": "A description for 'spring.dubbo.protocol.name'"
+  },
+  {
+    "name": "spring.dubbo.base-package",
+    "type": "java.lang.String",
+    "description": "A description for 'spring.dubbo.base-package'"
+  },
+  {
+    "name": "spring.dubbo.application.name",
+    "type": "java.lang.String",
+    "description": "A description for 'spring.dubbo.application.name'"
+  },
+  {
+    "name": "spring.dubbo.registry.address",
+    "type": "java.lang.String",
+    "description": "A description for 'spring.dubbo.registry.address'"
+  },
+  {
+    "name": "spring.dubbo.consumer.timeout",
+    "type": "java.lang.String",
+    "description": "A description for 'spring.dubbo.consumer.timeout'"
+  },
+  {
+    "name": "static.path",
+    "type": "java.lang.String",
+    "description": "A description for 'static.path'"
+  }
+]}

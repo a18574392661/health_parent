@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?> <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.itheima.mapper.UserLoginMapper"> <!--新增 -->
+	<select id="queryUserName" parameterType="string" resultType="com.itheima.pojo.User">
+	
+	   select * from t_user where username=#{username}
+	</select>
+	
+		<select id="userAll"  resultType="com.itheima.pojo.User" parameterType="com.itheima.pojo.User">
+	
+	
+	
+	   select u.* from t_user u
+	   
+	     <if test="remark !=null and remark !=null ">
+	     inner join t_user_role u_r 
+	     on u.id=u_r.user_id and u_r.role_id=#{remark}
+	    </if>
+	    
+	   <where>
+	    <if test="username !=null and username.length>0 ">
+	     and u.username = #{username}
+	    </if>
+	  
+	    
+	   </where>
+
+
+	</select>
+	
+	
+	
+	<select id="queryUserRolesCount" parameterType="string" resultType="int">
+	 select count(1) from t_user_role where user_id=#{id}
+	</select>
+	
+	<delete id="userDel" parameterType="string">
+	 delete from t_user where id=#{id}
+	</delete>
+	
+	<insert id="userAdd" parameterType="com.itheima.pojo.User" useGeneratedKeys="true" keyProperty="id" keyColumn="id">
+	 insert into t_user values(null,#{birthday},#{gender},#{username},#{password},#{remark},#{station},#{telephone})
+	</insert>
+	
+	<insert id="userRoleAdd" parameterType="java.util.Map">
+	
+	 insert into t_user_role values(#{userid},#{roleid})
+	</insert>
+	
+	<select id="userByid" parameterType="string" resultType="com.itheima.pojo.User">
+	 select * from t_user where id=#{id}
+	</select>
+	
+	<select id="userAndrole" parameterType="string" resultType="string">
+	select role_id from t_user_role where user_id=#{id}
+	</select>
+	
+	<delete id="delUserRole" parameterType="Integer">
+	 delete from t_user_role where user_id=#{id}
+	</delete>
+	
+	<update id="userEdit" parameterType="com.itheima.pojo.User">
+	 update t_user set
+	 birthday=#{birthday},
+	  gender=#{gender},
+	   username=#{username},
+	    password=#{password},
+	     telephone=#{telephone},
+	      remark=#{remark}
+	 
+	 where id=#{id}
+	</update>
+</mapper>

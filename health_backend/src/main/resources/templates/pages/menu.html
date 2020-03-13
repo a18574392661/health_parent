@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <!-- 页面meta -->
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>传智健康</title>
+        <meta name="description" content="传智健康">
+        <meta name="keywords" content="传智健康">
+        <meta content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" name="viewport">
+        <!-- 引入样式 -->
+        <link rel="stylesheet" href="plugins/elementui/index.css">
+        <link rel="stylesheet" href="plugins/font-awesome/css/font-awesome.min.css">
+        <link rel="stylesheet" href="css/style.css">
+        <!-- 引入组件库 -->
+        <script type="text/javascript" src="js/jquery.min.js"></script>
+        <script src="js/vue.js"></script>
+        <script src="plugins/elementui/index.js"></script>
+        <script src="js/axios-0.18.0.js"></script>
+        <style>
+            .avatar-uploader .el-upload {
+                border: 1px dashed #d9d9d9;
+                border-radius: 6px;
+                cursor: pointer;
+                position: relative;
+                overflow: hidden;
+            }
+            .avatar-uploader .el-upload:hover {
+                border-color: #409EFF;
+            }
+            .avatar-uploader-icon {
+                font-size: 28px;
+                color: #8c939d;
+                width: 178px;
+                height: 178px;
+                line-height: 178px;
+                text-align: center;
+            }
+            .avatar {
+                width: 178px;
+                height: 178px;
+                display: block;
+            }
+            .datatable {
+                position: relative;
+                box-sizing: border-box;
+                -webkit-box-flex: 1;
+                width: 100%;
+                max-width: 100%;
+                font-size: 14px;
+                color: rgb(96, 98, 102);
+                overflow: hidden;
+                flex: 1 1 0%;
+            }
+            .datatable td, .datatable th {
+                padding: 12px 0;
+                min-width: 0;
+                -webkit-box-sizing: border-box;
+                box-sizing: border-box;
+                text-overflow: ellipsis;
+                vertical-align: middle;
+                position: relative;
+                text-align: left;
+            }
+        </style>
+    </head>
+    <body class="hold-transition">
+        <div id="app">
+            
+											<el-tree :data="menuids"
+              :props="defaultProps"
+              @node-click="handleNodeClick"
+              node-key="id"
+              ref="tree"
+            >
+                 <div class="custom-tree-node"  slot-scope="{ node, data }">
+       	 <div class="fl"><i class="el-icon-menu">{{ node.label }}</i>
+       	 		<template v:i>
+		
+    <el-button icon="el-icon-circle-plus" type="primary" size="0.5" @click="handleCreate()"></el-button>
+    <el-button round icon="el-icon-edit" type="warning"  size="2"></el-button>
+    <span v-if="node.isLeaf === true ">
+    <el-button plain icon="el-icon-delete" type="danger"  size="2"></el-button>
+ </span>
+</template>
+
+       	 </div>
+       	
+        
+        </div>
+        
+        
+    </el-tree>
+  
+	<!-- 添加节点 -->
+ <!-- 新增标签弹层 -->
+     <div class="add-form">
+                        <el-dialog title="添加菜单" :visible.sync="dialogFormVisible">
+                            <template>
+                                <el-tabs v-model="activeName" type="card">
+                                    <el-tab-pane label="基本信息" name="first">
+                                        <el-form  ref="roleAdd" :model="formData" :rules="rules" label-position="right" label-width="100px">
+                                         <el-row>
+                                                <el-col :span="12">
+                                                    <el-form-item label="菜单名称"  prop="name">
+                                                        <el-input v-model="formData.name"/>
+                                                    </el-form-item>
+                                                </el-col>
+                                                <el-col :span="12">
+                                                    <el-form-item label="菜单路径" prop="linkUrl">
+                                                        <el-input v-model="formData.linkUrl"/>
+                                                    </el-form-item>
+                                                </el-col>
+                                            </el-row> 
+                                            
+                                             <el-row>
+                                         
+                                                <el-col :span="12">
+                                                    <el-form-item label="菜单排序" >
+                                                        <el-input v-model="formData.priority"/>
+                                                    </el-form-item>
+                                                </el-col>
+                                                
+                                                 <el-col :span="12">
+                                                    <el-form-item label="备注" >
+                                                        <el-input v-model="formData.description" type="textarea"/>
+                                                    </el-form-item>
+                                                </el-col>
+                                                	<input  type="hidden" v-model="formData.parentMenuId">
+                                            </el-row>  
+                                        
+                                           
+                                        </el-form>
+                   
+  
+
+										</div>
+                                    </el-tab-pane>
+                                </el-tabs>
+                            </template>
+                            <div slot="footer" class="dialog-footer">
+                                <el-button @click="dialogFormVisible = false">取消</el-button>
+                                <el-button type="primary" @click="handleAdd()">确定</el-button>
+                            </div>
+                        </el-dialog>
+                    </div>
+                    
+                
+                    
+									
+                                 
+                          
+                    </div>
+                    
+              
+  
+
+                        
+                           
+                    
+            
+    </body>
+    <script>
+        var vue = new Vue({
+            el: '#app',
+            data:{
+                activeName:'first',//添加/编辑窗口Tab标签名称
+                menuids:[],//树菜单
+                formData:"",
+                rules: {//校验规则
+                    name: [{ required: true, message: '菜单名称不能为空', trigger: 'blur' }],
+                    linkUrl: [{ required: true, message: '菜单路径不能为空', trigger: 'blur' }]
+                
+                },
+                defaultProps:{
+                	id:"id",
+                	label:"name",
+                	isLeaf:"level"
+                	
+                	  
+                  }
+            },
+            created() {
+            	
+                this.tree();
+              
+            },
+            methods: {
+            	tree(){
+                    //查询所有菜单 
+            		axios.post("to_tree").then((res) => {
+                            		
+                                    this.menuids =res.data.data;
+                                    this.dialogFormVisible = false;
+                            	});
+            		
+            	},
+                handleCreate() {
+	            //    this.resetForm();
+	                this.dialogFormVisible = true;
+	                this.activeName = 'first';//默认选中first对应的tab
+	                
+                   
+	            
+            } 
+           
+         
+            	
+           
+    						
+    						
+    						
+    				
+          
+            }
+        })
+    </script>
+</html>

@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8" ?> <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.itheima.mapper.OrderMapper"> <!--新增 -->
+	<select id="numberCartAll" parameterType="string" resultType="com.itheima.pojo.Member">
+	 select * from t_member where idCard=#{idCard} or phoneNumber=#{telephone}
+	</select>
+	
+	<insert id="numberSave" parameterType="com.itheima.pojo.Member"  useGeneratedKeys="true" keyProperty="id" keyColumn="id" >
+	
+	
+	 insert into t_member values(null,#{fileNumber},#{name},#{sex},#{idCard},#{phoneNumber},now(),#{password},#{email},#{birthday},#{remark})
+	</insert>
+	
+	<update id="numberUpdate" parameterType="java.util.Map">
+	 update t_member set 
+	 fileNumber=#{fileNumber},
+	 name=#{name},
+	 sex=#{sex},
+	 idCard=#{idCard},
+	 phoneNumber=#{phoneNumber},
+	 password=#{password},
+	 email=#{email},
+	 birthday=#{birthday},
+	 remark=#{remark}
+	
+	 where id=#{id}
+	</update>
+	
+	<!--  -->
+	<select id="orderCountState" parameterType="int" resultType="int">
+	 select count(1) from t_order where orderDate>now() and orderStatus=0 and member_id=#{id}
+	</select>
+	
+	<insert id="orderSave" parameterType="com.itheima.pojo.Order" useGeneratedKeys="true" keyProperty="id" keyColumn="id">
+	 insert into t_order values(null,#{memberId},#{orderDate},#{orderType},#{orderStatus},#{setmealId},#{addressId})
+	</insert>
+	
+	<select id="queryOrderDate" parameterType="java.util.Map">
+	 select count(1) from t_order where member_id=#{memberid}
+	 and orderDate=#{orderDate}
+	</select>
+	
+	<select id="queryOrderBynumber" parameterType="string"  resultType="java.util.Map">
+	 
+	select o.orderType, o.orderDate as orderDate,n.`name` as member ,se.`name` as setmeal from t_ORDER o inner join 
+t_member n on o.member_id=n.id 
+inner join t_setmeal se 
+on o.setmeal_id=se.id
+where o.id=#{id}
+	
+	</select>
+	
+	
+	
+	<select id="queryNumberCount" parameterType="string"  resultType="int">
+		
+		select count(1) from t_member where regTime >= #{month1} and regTime &lt; #{month2}
+	</select>
+
+
+<resultMap type="java.util.Map" id="groupbyOrders">
+ <result property="name" column="name"/>
+  <result property="count" column="count"/>
+</resultMap>
+
+<select id="orderNumCount" resultMap="groupbyOrders">
+select s.`name` as name,count(o.setmeal_id) as count from t_setmeal s LEFT   JOIN t_order o
+on s.id=o.setmeal_id
+GROUP BY s.id
+</select>
+
+
+<!-- 查询统计会员人数 -->
+<select id="queryPoiOrders" parameterType="java.util.Map" resultType="Integer">
+ select count(1) from t_member 
+ <where>
+ 	
+ 	<if test="todayNewMember !=null">
+ 	and t_member.regTime=#{todayNewMember}
+ 	</if>
+ 	<if test="thisMonthNewMember !=null">
+ 		and   DATE_FORMAT(regTime, '%Y%m') = DATE_FORMAT( CURDATE(),'%Y%m' )
+ 	</if>
+ 	<if test="thisWeekNewMember !=null"> <!-- 本周  -->
+ 		and YEARWEEK(date_format(t_member.regTime,'%Y-%m-%d')) = YEARWEEK(now())
+ 	</if>
+ 	
+ 
+ </where>
+</select>
+
+<select id="queryOrderCount"  parameterType="java.util.Map" resultType="Integer">
+ 
+    select count(1) from t_order 
+    <where>
+     <if test="todayNewMember !=null">
+      and t_order.orderDate=#{todayNewMember}
+     </if>
+     <if test="thisMonthNewMember !=null">
+     and   DATE_FORMAT(t_order.orderDate, '%Y%m') = DATE_FORMAT( CURDATE(),'%Y%m' )
+      
+     </if>
+      <if test="thisWeekNewMember !=null">
+        and YEARWEEK(date_format(t_order.orderDate,'%Y-%m-%d')) = YEARWEEK(now())
+     </if>
+     
+     <if test="sta !=null ">
+      and orderStatus=#{sta}
+     </if>
+     
+    </where>
+</select>
+
+
+	
+<resultMap type="com.itheima.pojo.Order" id="OrderResult">
+  <id column="id" property="id"/>
+	<result column="member_id" property="memberId"/>
+	<result column="orderDate" property="orderDate"/>
+	<result column="orderType" property="orderType"/>
+	<result column="orderStatus" property="orderStatus"/>
+	<result column="setmeal_id" property="setmealId"/>
+</resultMap>
+
+<resultMap type="com.itheima.pojo.Order" id="OrderMuMeAddrResult" extends="OrderResult">
+ <association property="member" javaType="com.itheima.pojo.Member">
+ 	
+ 	<result column="m_name" property="name"/>
+ 	<result column="m_phoneNumber" property="phoneNumber"/>
+ </association>
+ 
+ <association property="setmeal" javaType="com.itheima.pojo.Setmeal">
+ 	<result column="meal_name" property="name"/>
+ </association>
+
+ <association property="address" javaType="com.itheima.pojo.Address">
+ 	<result column="a_name" property="name"/>
+ </association>
+
+
+</resultMap>
+
+<select id="orderList"  parameterType="com.itheima.pojo.Order" resultMap="OrderMuMeAddrResult">
+ SELECT a.`name` as a_name, o.id,o.orderDate,o.orderStatus,o.orderType,m.`name` as m_name,m.phoneNumber as m_phoneNumber,meal.`name` as meal_name FROM t_order o left join t_member m
+on o.member_id=m.id left JOIN t_setmeal meal 
+on o.setmeal_id=meal.id left join t_address a ON o.addres_id=a.id
+	
+	<where>
+	 <if test="code !=null" >
+	   where m.idCard =#{code} or m.phoneNumber=#{code} or m.`name` = #{code}
+	 </if>
+	</where>
+</select>
+
+<update id="handleUpdateStatus" parameterType="string">
+ update t_order set orderStatus=1 where id=#{id}
+
+ </update>
+
+
+<delete id="handleDelete" parameterType="string">
+ 	delete from t_order where id=#{id}
+</delete>
+</mapper>

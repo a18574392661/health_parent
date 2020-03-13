@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8" ?> <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+
+<mapper namespace="com.itheima.mapper.MealMapper"> <!--新增 -->
+
+
+<select id="mealAll" parameterType="com.itheima.pojo.Setmeal" resultType="com.itheima.pojo.Setmeal">
+ select * from t_setmeal
+ <where>
+  <if  test="code != null and code.length > 0">
+    and name=#{code} or code=#{code} or helpCode=#{code}
+  </if>
+ </where>
+ 
+</select>
+
+<select id="mealByid" parameterType="int" resultType="com.itheima.pojo.Setmeal">
+ select * from t_setmeal where id=#{id}
+</select>
+
+
+<select id="myalbyIdGroup" resultType="string" parameterType="int">
+ select checkgroup_id from t_setmeal_checkgroup where setmeal_id=#{id}
+</select>
+
+<insert id="mealAdd" parameterType="com.itheima.pojo.Setmeal">
+  <selectKey resultType="java.lang.Integer" order="AFTER" keyProperty="id"> SELECT LAST_INSERT_ID()
+   </selectKey> 
+   insert into t_setmeal values (null,#{code},#{name},#{sex},#{age},#{helpCode},#{price},#{remark},#{attention},#{img})
+</insert>
+
+<insert id="mealAndGroupAdd" parameterType="java.util.Map">
+	insert into t_setmeal_checkgroup values(#{setmealid},#{checkgroupid})
+</insert>
+
+<select id="selectMealGroup" parameterType="Integer" resultType="Integer">
+ select count(1) from  t_setmeal_checkgroup where setmeal_id=#{id}
+</select>
+
+<delete id="mealGroupDels" parameterType="int" >
+ delete from t_setmeal_checkgroup where setmeal_id=#{id}
+</delete>
+
+<delete id="mealDel" parameterType="int" >
+ delete from t_setmeal where id=#{id}
+</delete>
+
+<update id="mealUpdate" parameterType="com.itheima.pojo.Setmeal">
+ update t_setmeal <set>
+  <if test="name!=null">
+   name=#{name},
+  </if>
+  
+   <if test="code!=null">
+   code=#{code},
+  </if>
+  
+   <if test="helpCode!=null">
+   helpCode=#{helpCode},
+  </if>
+  
+   <if test="sex!=null">
+   sex=#{sex},
+  </if>
+    <if test="age!=null">
+   age=#{age},
+  </if>
+    <if test="price!=null">
+   price=#{price},
+  </if>
+    <if test="remark!=null">
+   remark=#{remark},
+  </if>
+   <if test="attention!=null">
+   attention=#{attention},
+  </if>
+   <if test="img!=null">
+   img=#{img},
+  </if>
+ </set> 
+ where id=#{id}
+</update>
+
+
+<select id="queryAllMeal" resultType="com.itheima.pojo.Setmeal">
+ select * from t_setmeal
+</select>
+
+ <resultMap id="findOrCheckGroupOrItem" type="com.itheima.pojo.Setmeal" autoMapping="true">
+        
+        <result column="mea_id" property="id"></result>
+        <collection property="checkGroups" ofType="com.itheima.pojo.CheckGroup" autoMapping="true">
+            <result column="gro_id" property="id"/>
+            <result column="gro_code" property="code"/>
+            <result column="gro_name" property="name"/>
+            <result column="gro_helpCode" property="helpCode"/>
+            <result column="gro_remark" property="remark"/>
+            <result  column="item_attention" property="attention"/>
+	          
+	            <collection 	property="checkItems" ofType="com.itheima.pojo.CheckItem" autoMapping="true">
+	            		<result  column="item_id" property="id"/>
+	            		<result  column="item_code" property="code"/>
+	            		<result  column="item_name" property="name"/>
+	            			<result  column="item_sex" property="sex"/>
+	            		<result  column="item_age" property="age"/>
+	            		<result  column="item_price" property="price"/>
+	            		<result  column="item_type" property="type"/>
+	            			<result  column="item_remark" property="remark"/>
+	        		<result  column="item_attention" property="attention"/>
+	            </collection>
+        </collection>
+    </resultMap>
+
+<!-- <select id="findById" parameterType="int" resultMap="findOrCheckGroupOrItem">
+    select mea.*,gro.`name` as gro_name,gro.`code` as gro_code,gro.attention as gro_attention,gro.remark as gro_remark,gro.sex as gro_sex,item.`name` as item_name,item.age as item_age,item.attention as item_attention,item.price as item_price,item.remark as item_remark ,gro.id as gro_id,item.id as item_id 
+from t_setmeal mea 
+left join t_setmeal_checkgroup m_g 
+on mea.id=m_g.setmeal_id left join t_checkgroup gro 
+on m_g.checkgroup_id=gro.id 
+left join t_checkgroup_checkitem c_i
+on gro.id=c_i.checkgroup_id left JOIN t_checkitem item 
+on c_i.checkitem_id=item.id where mea.id=#{id}
+</select> -->
+
+<select id="findGroupByid" parameterType="Integer" resultType="com.itheima.pojo.CheckGroup">
+ select * from t_checkgroup where id 
+in (select checkgroup_id from t_setmeal_checkgroup WHERE setmeal_id=#{id})
+</select>
+
+<select id="findItemByid" parameterType="Integer" resultType="com.itheima.pojo.CheckItem">
+select * from t_checkitem where id 
+in (select checkitem_id from t_checkgroup_checkitem WHERE checkgroup_id=#{id})
+</select>
+
+<select id="login" parameterType="com.itheima.pojo.Member" resultType="com.itheima.pojo.Member">
+ select * from t_member where phoneNumber=#{phoneNumber}
+</select>
+
+</mapper>

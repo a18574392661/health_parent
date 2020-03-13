@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+  <link rel="stylesheet" href="/plugins/elementui/index.css">
+        <link rel="stylesheet" href="/plugins/font-awesome/css/font-awesome.min.css">
+        <link rel="stylesheet" href="/css/style.css">
+        <link rel="stylesheet" href="/css/orderset.css">
+        <!-- 引入组件库 -->
+        <script src="/js/vue.js"></script>
+        <script src="/plugins/elementui/index.js"></script>
+        <script type="/text/javascript" src="js/jquery.min.js"></script>
+        <script src="/js/axios-0.18.0.js"></script>
+          <script src="/js/axios-0.18.0.js"></script>
+          <script type="text/javascript" src="/js/echarts.js" ></script>
+</head>
+<body>
+ <div id="main" style="width: 600px;height:400px;"></div>
+ 
+ <script type="text/javascript">
+ var myChart = echarts.init(document.getElementById('main'));
+ 
+ 
+ 
+	axios.get("numberCount").then((res) => {
+		
+	 	option = {
+			    xAxis: {
+			        type: 'category',
+			        data:res.data.data.name
+			    },
+			    yAxis: {
+			        type: 'value'
+			    },
+			    series: [{
+			        data: res.data.data.value,
+			        type: 'line'
+			    }]
+			}; 
+			
+	
+			   myChart.setOption(option);		
+		
+		});
+	
+ 
+ 
+ </script>
+</body>
+</html>

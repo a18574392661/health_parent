@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?> <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+
+<mapper namespace="com.itheima.mapper.CheckGroupMapper"> <!--新增 -->
+
+	<insert id="checkGroupAdd" parameterType="com.itheima.pojo.CheckGroup" >
+	<!-- 新增完之后拿到这个id -->
+		<selectKey resultType="java.lang.Integer" order="AFTER" keyProperty="id"> 
+		SELECT LAST_INSERT_ID()
+		</selectKey>
+	 insert into t_checkgroup(code,name,sex,helpCode,remark,attention) values (#{code},#{name},#{sex},#{helpCode},#{remark},#{attention})
+		 </insert>
+		 
+		 <!-- 新增项跟组中间表  -->
+		 <insert id="checkItemAndGroupAdd" parameterType="java.util.Map">
+		 		insert into t_checkgroup_checkitem values(#{checkgroupid},#{checkitemid})
+		 </insert>
+		 
+		 <!-- 根据组删除他下面的项的关系 -->
+		 
+		 <delete id="deleteGroupitems" parameterType="int">
+		  delete from t_checkgroup_checkitem where checkgroup_id=#{id}
+		 </delete>
+		 
+		 <select id="checkGroupAll" parameterType="com.itheima.pojo.CheckGroup" resultType="com.itheima.pojo.CheckGroup">
+		 
+		 select * from t_checkgroup
+		 <if test="code != null and code.length > 0"> 
+				where code = #{code} or name = #{code} or helpCode = #{code}
+			</if> 
+		 </select>
+		 
+		 <select id="selectGroupitem" parameterType="int" resultType="string">
+		  select  checkitem_id from t_checkgroup_checkitem 
+			WHERE checkgroup_id=#{id}
+		 </select>
+		 
+		 <delete id="checkGroupDel"  parameterType="int">
+			delete from t_checkgroup where id = #{id}
+		 </delete>
+		 
+		 <select id="checkGroupByid" parameterType="com.itheima.pojo.CheckGroup" resultType="com.itheima.pojo.CheckGroup">
+		 
+		  select * from t_checkgroup where id=#{id}
+		 </select>
+		 
+		 <update id="updateCheckGroup" parameterType="com.itheima.pojo.CheckGroup">
+update t_checkgroup <set> <if test="name != null"> name = #{name}, </if> <if test="sex != null"> sex = #{sex}, </if> <if test="code != null"> code = #{code}, </if> <if test="helpCode != null"> helpCode = #{helpCode}, </if> <if test="attention != null"> attention = #{attention}, </if> <if test="remark != null"> remark = #{remark}, </if></set>
+where id=#{id}
+		 
+		 </update>
+</mapper>

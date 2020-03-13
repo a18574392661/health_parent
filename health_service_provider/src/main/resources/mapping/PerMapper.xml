@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?> <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.itheima.mapper.PerMapper"> 
+
+
+<select id="queryRolePers" parameterType="string" resultType="com.itheima.pojo.Permission">
+ 
+select * from t_permission per INNER JOIN
+t_role_permission r_p
+on per.id=r_p.permission_id
+where r_p.role_id in ${roleids}
+</select>
+
+<select id="perAll" resultType="com.itheima.pojo.Permission">
+ select * from t_permission
+</select>
+
+<delete id="delPer" parameterType="string">
+ delete from t_permission where id=#{id}
+</delete>
+<delete id="delPerRole" parameterType="string">
+delete from t_role_permission where permission_id=#{id}
+</delete>
+
+<insert id="perAdd" parameterType="com.itheima.pojo.Permission">
+ insert into t_permission values(null,#{name},#{keyword},#{description})
+</insert>
+
+<insert id="editAdd" parameterType="com.itheima.pojo.Permission">
+ 
+ update t_permission set name=#{name},keyword=#{keyword},description=#{description}
+ where id=#{id}
+</insert>
+
+<select id="perByid" parameterType="string" resultType="com.itheima.pojo.Permission">
+ select * from t_permission  where id=#{id}
+</select>
+</mapper>

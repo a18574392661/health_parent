@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?> <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.itheima.mapper.UserTestMapper">
+
+	 <select id="muserAll" resultType="com.itheima.pojo.Muser">
+	select * from muser
+
+</select>
+
+
+	<select id="muserById" resultType="com.itheima.pojo.Muser" parameterType="string">
+		select * from muser where id=#{id}
+
+	</select>
+
+
+	<insert id="muserAdd" parameterType="com.itheima.pojo.Muser">
+		INSERT  INTO  muser VALUES (NULL ,#{username},#{password},now(),#{rid})
+
+	</insert>
+
+	<select id="mroleAll" resultType="com.itheima.pojo.Mrole">
+		 select * from mrole
+
+	</select>
+
+	<delete id="delMuser" parameterType="string">
+		 DELETE  FROM  muser where id=#{id}
+
+	</delete>
+
+	<update id="muserEdit" parameterType="com.itheima.pojo.Mrole">
+			update muser set username=#{username} ,password=#{password},rid=#{rid}
+			where id=#{id}
+		</update>
+
+</mapper>
